@@ -72,6 +72,11 @@ class Ppfx(CMakePackage):
     depends_on("root")
     depends_on("xerces-c")
 
+    def patch(self):
+        # Newer libstdc++ (GCC 13+) no longer exposes unqualified ::isinf/::isnan
+        filter_file(r"(?<![\w:])isinf\(", "std::isinf(", "src/TargetAttenuationReweighter.cpp")
+        filter_file(r"(?<![\w:])isnan\(", "std::isnan(", "src/FillIMapHists.cpp")
+
     def cmake_args(self):
         args = [self.define_from_variant("CMAKE_CXX_STANDARD", "cxxstd"), "-Dppfx_FW_DIR=fw"]
         return args
